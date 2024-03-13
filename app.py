@@ -1,277 +1,340 @@
-<!DOCTYPE html>
-<!-- saved from url=(0033)http://localhost:8888/edit/app.py -->
-<html lang="en-us"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-
-    <title>app.py - Jupyter Text Editor</title>
-    <link id="favicon" rel="shortcut icon" type="image/x-icon" href="http://localhost:8888/static/base/images/favicon-file.ico?v=f9f0a782d7d67b3a57bf7dce251d771b405c7890604576ec8b9a621a39d7670f6b43ffabef1e566f1cd741ee302e15977d9e1cf60bbacebafe75787b9916415c">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <link rel="stylesheet" href="./app_files/jquery-ui.min.css" type="text/css">
-    <link rel="stylesheet" href="./app_files/jquery.typeahead.min.css" type="text/css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    
-<link rel="stylesheet" href="./app_files/codemirror.css">
-<link rel="stylesheet" href="./app_files/dialog.css">
-
-    <link rel="stylesheet" href="./app_files/style.min.css" type="text/css">
-    
-
-    <link rel="stylesheet" href="./app_files/custom.css" type="text/css">
-    <script src="./app_files/promise.min.js.download" type="text/javascript" charset="utf-8"></script>
-    <script src="./app_files/react.production.min.js.download" type="text/javascript"></script>
-    <script src="./app_files/react-dom.production.min.js.download" type="text/javascript"></script>
-    <script src="./app_files/index.js.download" type="text/javascript"></script>
-    <script src="./app_files/require.js.download" type="text/javascript" charset="utf-8"></script>
-    <script>
-      require.config({
-          
-          urlArgs: "v=20240314022332",
-          
-          baseUrl: '/static/',
-          paths: {
-            'auth/js/main': 'auth/js/main.min',
-            custom : '/custom',
-            nbextensions : '/nbextensions',
-            kernelspecs : '/kernelspecs',
-            underscore : 'components/underscore/underscore-min',
-            backbone : 'components/backbone/backbone-min',
-            jed: 'components/jed/jed',
-            jquery: 'components/jquery/jquery.min',
-            json: 'components/requirejs-plugins/src/json',
-            text: 'components/requirejs-text/text',
-            bootstrap: 'components/bootstrap/dist/js/bootstrap.min',
-            bootstraptour: 'components/bootstrap-tour/build/js/bootstrap-tour.min',
-            'jquery-ui': 'components/jquery-ui/dist/jquery-ui.min',
-            moment: 'components/moment/min/moment-with-locales',
-            codemirror: 'components/codemirror',
-            termjs: 'components/xterm.js/xterm',
-            typeahead: 'components/jquery-typeahead/dist/jquery.typeahead.min',
-          },
-          map: { // for backward compatibility
-              "*": {
-                  "jqueryui": "jquery-ui",
-              }
-          },
-          shim: {
-            typeahead: {
-              deps: ["jquery"],
-              exports: "typeahead"
-            },
-            underscore: {
-              exports: '_'
-            },
-            backbone: {
-              deps: ["underscore", "jquery"],
-              exports: "Backbone"
-            },
-            bootstrap: {
-              deps: ["jquery"],
-              exports: "bootstrap"
-            },
-            bootstraptour: {
-              deps: ["bootstrap"],
-              exports: "Tour"
-            },
-            "jquery-ui": {
-              deps: ["jquery"],
-              exports: "$"
-            }
-          },
-          waitSeconds: 30,
-      });
-
-      require.config({
-          map: {
-              '*':{
-                'contents': 'services/contents',
-              }
-          }
-      });
-
-      // error-catching custom.js shim.
-      define("custom", function (require, exports, module) {
-          try {
-              var custom = require('custom/custom');
-              console.debug('loaded custom.js');
-              return custom;
-          } catch (e) {
-              console.error("error loading custom.js", e);
-              return {};
-          }
-      })
-
-      // error-catching custom-preload.js shim.
-      define("custom-preload", function (require, exports, module) {
-          try {
-              var custom = require('custom/custom-preload');
-              console.debug('loaded custom-preload.js');
-              return custom;
-          } catch (e) {
-              console.error("error loading custom-preload.js", e);
-              return {};
-          }
-      })
-
-    document.nbjs_translations = {"domain": "nbjs", "locale_data": {"nbjs": {"": {"domain": "nbjs"}}}};
-    document.documentElement.lang = navigator.language.toLowerCase();
-    </script>
-
-    
-    
-
-<script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="services/contents" src="./app_files/contents.js.download"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="custom/custom-preload" src="./app_files/custom-preload.js.download"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="custom/custom" src="./app_files/custom.js.download"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="codemirror/mode/python/python" src="./app_files/python.js.download"></script></head>
-
-<body class="edit_app " data-base-url="/" data-file-path="app.py" data-jupyter-api-token="7f7d5947af3529e3bdfc3937f007688acc432ecb77da1024" dir="ltr">
-
-<noscript>
-    <div id='noscript'>
-      Jupyter Notebook requires JavaScript.<br>
-      Please enable it to proceed. 
-  </div>
-</noscript>
-
-<div id="header" role="navigation" aria-label="Top Menu" style="display: block;">
-  <div id="header-container" class="container">
-  <div id="ipython_notebook" class="nav navbar-brand"><a href="http://localhost:8888/tree?token=7f7d5947af3529e3bdfc3937f007688acc432ecb77da1024" title="dashboard">
-      <img src="./app_files/logo.png" alt="Jupyter Notebook">
-  </a></div>
-
-  
-
-<span id="save_widget" class="pull-left save_widget">
-    <span class="filename">app.py</span>
-    <div class="dirty-indicator-clean" title="No changes to save"></div><span class="last_modified" title="Thu, Mar 14, 2024 2:11 AM">12 minutes ago</span>
-</span>
-
-
-  
-
-  
-  
-  
-  
-
-    <span id="login_widget">
-      
-        <button id="logout" class="btn btn-sm navbar-btn">Logout</button>
-      
-    </span>
-
-  
-
-  
-  
-  </div>
-  <div class="header-bar"></div>
-
-  
-
-<div id="menubar-container" class="container">
-  <div id="menubar">
-    <div id="menus" class="navbar navbar-default" role="navigation">
-      <div class="container-fluid">
-          <p class="navbar-text indicator_area">
-          <span id="current-mode" title="The current language is Python">Python</span>
-          </p>
-        <button type="button" class="btn btn-default navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <i class="fa fa-bars"></i>
-          <span class="navbar-text">Menu</span>
-        </button>
-        <ul class="nav navbar-nav navbar-right">
-          <li id="notification_area"><div id="notification_save" class="notification_widget btn btn-xs navbar-btn" style="display: none;"><span></span></div></li>
-        </ul>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav">
-            <li class="dropdown"><a href="http://localhost:8888/edit/app.py#" class="dropdown-toggle" data-toggle="dropdown">File</a>
-              <ul id="file-menu" class="dropdown-menu">
-                <li id="new-file"><a href="http://localhost:8888/edit/app.py#">New</a></li>
-                <li id="save-file"><a href="http://localhost:8888/edit/app.py#">Save</a></li>
-                <li id="rename-file"><a href="http://localhost:8888/edit/app.py#">Rename</a></li>
-                <li id="download-file"><a href="http://localhost:8888/edit/app.py#">Download</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a href="http://localhost:8888/edit/app.py#" class="dropdown-toggle" data-toggle="dropdown">Edit</a>
-              <ul id="edit-menu" class="dropdown-menu">
-                <li id="menu-find"><a href="http://localhost:8888/edit/app.py#">Find</a></li>
-                <li id="menu-replace"><a href="http://localhost:8888/edit/app.py#">Find &amp; Replace</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Key Map</li>
-                <li id="menu-keymap-default" class="selected-keymap"><a href="http://localhost:8888/edit/app.py#">Default<i class="fa"></i></a></li>
-                <li id="menu-keymap-sublime"><a href="http://localhost:8888/edit/app.py#">Sublime Text<i class="fa"></i></a></li>
-                <li id="menu-keymap-vim"><a href="http://localhost:8888/edit/app.py#">Vim<i class="fa"></i></a></li>
-                <li id="menu-keymap-emacs"><a href="http://localhost:8888/edit/app.py#">emacs<i class="fa"></i></a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a href="http://localhost:8888/edit/app.py#" class="dropdown-toggle" data-toggle="dropdown">View</a>
-              <ul id="view-menu" class="dropdown-menu">
-              <li id="toggle_header" title="Show/Hide the logo and notebook title (above menu bar)">
-              <a href="http://localhost:8888/edit/app.py#">Toggle Header</a></li>
-              <li id="menu-line-numbers"><a href="http://localhost:8888/edit/app.py#">Toggle Line Numbers</a></li>
-              </ul>
-            </li>
-            <li class="dropdown"><a href="http://localhost:8888/edit/app.py#" class="dropdown-toggle" data-toggle="dropdown">Language</a>
-              <ul id="mode-menu" class="dropdown-menu">
-              <li><a href="http://localhost:8888/edit/app.py#" title="Set language to APL">APL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to PGP">PGP</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to ASN.1">ASN.1</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Asterisk">Asterisk</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Brainfuck">Brainfuck</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to C">C</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to C++">C++</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Cobol">Cobol</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to C#">C#</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Clojure">Clojure</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to ClojureScript">ClojureScript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Closure Stylesheets (GSS)">Closure Stylesheets (GSS)</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to CMake">CMake</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to CoffeeScript">CoffeeScript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Common Lisp">Common Lisp</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Cypher">Cypher</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Cython">Cython</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Crystal">Crystal</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to CSS">CSS</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to CQL">CQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to D">D</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Dart">Dart</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to diff">diff</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Django">Django</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Dockerfile">Dockerfile</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to DTD">DTD</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Dylan">Dylan</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to EBNF">EBNF</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to ECL">ECL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to edn">edn</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Eiffel">Eiffel</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Elm">Elm</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Embedded Javascript">Embedded Javascript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Embedded Ruby">Embedded Ruby</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Erlang">Erlang</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Esper">Esper</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Factor">Factor</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to FCL">FCL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Forth">Forth</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Fortran">Fortran</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to F#">F#</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Gas">Gas</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Gherkin">Gherkin</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to GitHub Flavored Markdown">GitHub Flavored Markdown</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Go">Go</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Groovy">Groovy</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to HAML">HAML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Haskell">Haskell</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Haskell (Literate)">Haskell (Literate)</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Haxe">Haxe</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to HXML">HXML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to ASP.NET">ASP.NET</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to HTML">HTML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to HTTP">HTTP</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to IDL">IDL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Pug">Pug</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Java">Java</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Java Server Pages">Java Server Pages</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to JavaScript">JavaScript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to JSON">JSON</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to JSON-LD">JSON-LD</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to JSX">JSX</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Jinja2">Jinja2</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Julia">Julia</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Kotlin">Kotlin</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to LESS">LESS</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to LiveScript">LiveScript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Lua">Lua</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Markdown">Markdown</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to mIRC">mIRC</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to MariaDB SQL">MariaDB SQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Mathematica">Mathematica</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Modelica">Modelica</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to MUMPS">MUMPS</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to MS SQL">MS SQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to mbox">mbox</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to MySQL">MySQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Nginx">Nginx</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to NSIS">NSIS</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to NTriples">NTriples</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Objective-C">Objective-C</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Objective-C++">Objective-C++</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to OCaml">OCaml</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Octave">Octave</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Oz">Oz</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Pascal">Pascal</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to PEG.js">PEG.js</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Perl">Perl</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to PHP">PHP</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Pig">Pig</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Plain Text">Plain Text</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to PLSQL">PLSQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to PostgreSQL">PostgreSQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to PowerShell">PowerShell</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Properties files">Properties files</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to ProtoBuf">ProtoBuf</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Python">Python</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Puppet">Puppet</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Q">Q</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to R">R</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to reStructuredText">reStructuredText</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to RPM Changes">RPM Changes</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to RPM Spec">RPM Spec</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Ruby">Ruby</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Rust">Rust</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SAS">SAS</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Sass">Sass</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Scala">Scala</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Scheme">Scheme</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SCSS">SCSS</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Shell">Shell</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Sieve">Sieve</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Slim">Slim</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Smalltalk">Smalltalk</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Smarty">Smarty</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Solr">Solr</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SML">SML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Soy">Soy</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SPARQL">SPARQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Spreadsheet">Spreadsheet</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SQL">SQL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SQLite">SQLite</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Squirrel">Squirrel</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Stylus">Stylus</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Swift">Swift</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to sTeX">sTeX</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to LaTeX">LaTeX</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to SystemVerilog">SystemVerilog</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Tcl">Tcl</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Textile">Textile</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to TiddlyWiki">TiddlyWiki</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Tiki wiki">Tiki wiki</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to TOML">TOML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Tornado">Tornado</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to troff">troff</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to TTCN">TTCN</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to TTCN_CFG">TTCN_CFG</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Turtle">Turtle</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to TypeScript">TypeScript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to TypeScript-JSX">TypeScript-JSX</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Twig">Twig</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Web IDL">Web IDL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to VB.NET">VB.NET</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to VBScript">VBScript</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Velocity">Velocity</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Verilog">Verilog</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to VHDL">VHDL</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Vue.js Component">Vue.js Component</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to XML">XML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to XQuery">XQuery</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Yacas">Yacas</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to YAML">YAML</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to Z80">Z80</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to mscgen">mscgen</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to xu">xu</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to msgenny">msgenny</a></li><li><a href="http://localhost:8888/edit/app.py#" title="Set language to WebAssembly">WebAssembly</a></li></ul>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="lower-header-bar"></div>
-
-
-</div>
-
-<div id="site" style="display: block; height: 556.438px;">
-
-
-<div id="texteditor-backdrop">
-<div id="texteditor-container" class="container"><div class="CodeMirror cm-s-ipython CodeMirror-wrap" style="height: 516.438px;"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 5.59375px; left: 41px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-vscrollbar" tabindex="-1" cm-not-content="true" style="display: block; bottom: 0px;"><div style="min-width: 1px; height: 7456px;"></div></div><div class="CodeMirror-hscrollbar" tabindex="-1" cm-not-content="true"><div style="height: 100%; min-height: 1px; width: 0px;"></div></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 37px; margin-bottom: -17px; border-right-width: 33px; min-height: 7457px; padding-right: 17px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre class="CodeMirror-line-like"><span>xxxxxxxxxx</span></pre><div class="CodeMirror-linenumber CodeMirror-gutter-elt"><div>341</div></div></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-cursors"><div class="CodeMirror-cursor" style="left: 4px; top: 0px; height: 17px;">&nbsp;</div></div><div class="CodeMirror-code" role="presentation" style=""><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">1</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">2</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> <span class="cm-string">"cells"</span>: [</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">3</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">  {</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">4</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-string">"cell_type"</span>: <span class="cm-string">"code"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">5</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-string">"execution_count"</span>: <span class="cm-number">2</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">6</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-string">"id"</span>: <span class="cm-string">"7033478b"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">7</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-string">"metadata"</span>: {},</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">8</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; <span class="cm-string">"outputs"</span>: [</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">9</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  {</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">10</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; <span class="cm-string">"name"</span>: <span class="cm-string">"stdout"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">11</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; <span class="cm-string">"output_type"</span>: <span class="cm-string">"stream"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">12</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; <span class="cm-string">"text"</span>: [</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">13</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Collecting streamlit\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">14</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"  Downloading streamlit-1.32.1-py2.py3-none-any.whl (8.1 MB)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">15</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">" &nbsp; &nbsp; ---------------------------------------- 8.1/8.1 MB 2.3 MB/s eta 0:00:00\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">16</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Collecting altair&lt;6,&gt;=4.0\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">17</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"  Downloading altair-5.2.0-py3-none-any.whl (996 kB)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">18</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">" &nbsp; &nbsp; -------------------------------------- 996.9/996.9 kB 1.9 MB/s eta 0:00:00\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">19</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Collecting blinker&lt;2,&gt;=1.0.0\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">20</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"  Using cached blinker-1.7.0-py3-none-any.whl (13 kB)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">21</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: cachetools&lt;6,&gt;=4.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (5.3.0)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">22</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: click&lt;9,&gt;=7.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (8.1.3)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">23</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: numpy&lt;2,&gt;=1.19.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.23.5)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">24</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: packaging&lt;24,&gt;=16.8 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (23.0)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">25</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: pandas&lt;3,&gt;=1.3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.5.3)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">26</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: pillow&lt;11,&gt;=7.1.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (9.4.0)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">27</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: protobuf&lt;5,&gt;=3.20 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (4.22.0)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">28</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Collecting pyarrow&gt;=7.0\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">29</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"  Downloading pyarrow-15.0.1-cp311-cp311-win_amd64.whl (24.8 MB)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">30</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">" &nbsp; &nbsp; ---------------------------------------- 24.8/24.8 MB 2.5 MB/s eta 0:00:00\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">31</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: requests&lt;3,&gt;=2.27 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (2.28.2)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">32</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Requirement already satisfied: rich&lt;14,&gt;=10.14.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (13.7.0)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">33</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Collecting tenacity&lt;9,&gt;=8.1.0\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">34</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"  Downloading tenacity-8.2.3-py3-none-any.whl (24 kB)\n"</span>,</span></pre></div><div style="position: relative;"><div class="CodeMirror-gutter-wrapper" style="left: -37px;"><div class="CodeMirror-linenumber CodeMirror-gutter-elt" style="left: 0px; width: 24px;">35</div></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp;<span class="cm-string">"Collecting toml&lt;2,&gt;=0.10.1\n"</span>,</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 33px; width: 1px; border-bottom: 0px solid transparent; top: 7457px;"></div><div class="CodeMirror-gutters" style="height: 7490px; left: 0px;"><div class="CodeMirror-gutter CodeMirror-linenumbers" style="width: 36px;"></div></div></div></div></div>
-</div>
-
-
-</div>
-
-
-
-
-
-
-    
-
-
-<script src="./app_files/main.min.js.download" type="text/javascript" charset="utf-8"></script>
-
-
-<script type="text/javascript">
-  function _remove_token_from_url() {
-    if (window.location.search.length <= 1) {
-      return;
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "7033478b",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting streamlit\n",
+      "  Downloading streamlit-1.32.1-py2.py3-none-any.whl (8.1 MB)\n",
+      "     ---------------------------------------- 8.1/8.1 MB 2.3 MB/s eta 0:00:00\n",
+      "Collecting altair<6,>=4.0\n",
+      "  Downloading altair-5.2.0-py3-none-any.whl (996 kB)\n",
+      "     -------------------------------------- 996.9/996.9 kB 1.9 MB/s eta 0:00:00\n",
+      "Collecting blinker<2,>=1.0.0\n",
+      "  Using cached blinker-1.7.0-py3-none-any.whl (13 kB)\n",
+      "Requirement already satisfied: cachetools<6,>=4.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (5.3.0)\n",
+      "Requirement already satisfied: click<9,>=7.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (8.1.3)\n",
+      "Requirement already satisfied: numpy<2,>=1.19.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.23.5)\n",
+      "Requirement already satisfied: packaging<24,>=16.8 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (23.0)\n",
+      "Requirement already satisfied: pandas<3,>=1.3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.5.3)\n",
+      "Requirement already satisfied: pillow<11,>=7.1.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (9.4.0)\n",
+      "Requirement already satisfied: protobuf<5,>=3.20 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (4.22.0)\n",
+      "Collecting pyarrow>=7.0\n",
+      "  Downloading pyarrow-15.0.1-cp311-cp311-win_amd64.whl (24.8 MB)\n",
+      "     ---------------------------------------- 24.8/24.8 MB 2.5 MB/s eta 0:00:00\n",
+      "Requirement already satisfied: requests<3,>=2.27 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (2.28.2)\n",
+      "Requirement already satisfied: rich<14,>=10.14.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (13.7.0)\n",
+      "Collecting tenacity<9,>=8.1.0\n",
+      "  Downloading tenacity-8.2.3-py3-none-any.whl (24 kB)\n",
+      "Collecting toml<2,>=0.10.1\n",
+      "  Downloading toml-0.10.2-py2.py3-none-any.whl (16 kB)\n",
+      "Requirement already satisfied: typing-extensions<5,>=4.3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (4.5.0)\n",
+      "Collecting gitpython!=3.1.19,<4,>=3.0.7\n",
+      "  Downloading GitPython-3.1.42-py3-none-any.whl (195 kB)\n",
+      "     -------------------------------------- 195.4/195.4 kB 2.4 MB/s eta 0:00:00\n",
+      "Collecting pydeck<1,>=0.8.0b4\n",
+      "  Downloading pydeck-0.8.1b0-py2.py3-none-any.whl (4.8 MB)\n",
+      "     ---------------------------------------- 4.8/4.8 MB 2.1 MB/s eta 0:00:00\n",
+      "Requirement already satisfied: tornado<7,>=6.0.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (6.2)\n",
+      "Collecting watchdog>=2.1.5\n",
+      "  Downloading watchdog-4.0.0-py3-none-win_amd64.whl (82 kB)\n",
+      "     ---------------------------------------- 82.9/82.9 kB 1.2 MB/s eta 0:00:00\n",
+      "Requirement already satisfied: jinja2 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from altair<6,>=4.0->streamlit) (3.1.2)\n",
+      "Requirement already satisfied: jsonschema>=3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from altair<6,>=4.0->streamlit) (4.17.3)\n",
+      "Collecting toolz\n",
+      "  Downloading toolz-0.12.1-py3-none-any.whl (56 kB)\n",
+      "     ---------------------------------------- 56.1/56.1 kB 2.9 MB/s eta 0:00:00\n",
+      "Requirement already satisfied: colorama in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from click<9,>=7.0->streamlit) (0.4.6)\n",
+      "Collecting gitdb<5,>=4.0.1\n",
+      "  Downloading gitdb-4.0.11-py3-none-any.whl (62 kB)\n",
+      "     ---------------------------------------- 62.7/62.7 kB 3.3 MB/s eta 0:00:00\n",
+      "Requirement already satisfied: python-dateutil>=2.8.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from pandas<3,>=1.3.0->streamlit) (2.8.2)\n",
+      "Requirement already satisfied: pytz>=2020.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from pandas<3,>=1.3.0->streamlit) (2022.7.1)\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (3.0.1)\n",
+      "Requirement already satisfied: idna<4,>=2.5 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (3.4)\n",
+      "Requirement already satisfied: urllib3<1.27,>=1.21.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (1.26.14)\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (2022.12.7)\n",
+      "Requirement already satisfied: markdown-it-py>=2.2.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from rich<14,>=10.14.0->streamlit) (3.0.0)\n",
+      "Requirement already satisfied: pygments<3.0.0,>=2.13.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from rich<14,>=10.14.0->streamlit) (2.14.0)\n",
+      "Collecting smmap<6,>=3.0.1\n",
+      "  Downloading smmap-5.0.1-py3-none-any.whl (24 kB)\n",
+      "Requirement already satisfied: MarkupSafe>=2.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jinja2->altair<6,>=4.0->streamlit) (2.1.2)\n",
+      "Requirement already satisfied: attrs>=17.4.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jsonschema>=3.0->altair<6,>=4.0->streamlit) (22.2.0)\n",
+      "Requirement already satisfied: pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0.14.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jsonschema>=3.0->altair<6,>=4.0->streamlit) (0.19.3)\n",
+      "Requirement already satisfied: mdurl~=0.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from markdown-it-py>=2.2.0->rich<14,>=10.14.0->streamlit) (0.1.2)\n",
+      "Requirement already satisfied: six>=1.5 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from python-dateutil>=2.8.1->pandas<3,>=1.3.0->streamlit) (1.16.0)\n",
+      "Installing collected packages: watchdog, toolz, toml, tenacity, smmap, pyarrow, blinker, pydeck, gitdb, gitpython, altair, streamlit\n",
+      "Successfully installed altair-5.2.0 blinker-1.7.0 gitdb-4.0.11 gitpython-3.1.42 pyarrow-15.0.1 pydeck-0.8.1b0 smmap-5.0.1 streamlit-1.32.1 tenacity-8.2.3 toml-0.10.2 toolz-0.12.1 watchdog-4.0.0\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "[notice] A new release of pip available: 22.3.1 -> 24.0\n",
+      "[notice] To update, run: C:\\Users\\siddh\\AppData\\Local\\Programs\\Python\\Python311\\python.exe -m pip install --upgrade pip\n"
+     ]
     }
-    var search_parameters = window.location.search.slice(1).split('&');
-    for (var i = 0; i < search_parameters.length; i++) {
-      if (search_parameters[i].split('=')[0] === 'token') {
-        // remote token from search parameters
-        search_parameters.splice(i, 1);
-        var new_search = '';
-        if (search_parameters.length) {
-          new_search = '?' + search_parameters.join('&');
-        }
-        var new_url = window.location.origin + 
-                      window.location.pathname + 
-                      new_search + 
-                      window.location.hash;
-        window.history.replaceState({}, "", new_url);
-        return;
-      }
+   ],
+   "source": [
+    "pip install streamlit"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "52f12c19",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import streamlit as st\n",
+    "import tensorflow as tf\n",
+    "import numpy as np"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "d132d24d",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Define paths to the model and label files\n",
+    "MODEL_PATH = \"/Users/siddh/OneDrive/Desktop/4th yr project/model/keras_new_model.h5\"\n",
+    "LABEL_PATH = \"/Users/siddh/OneDrive/Desktop/4th yr project/model/labelss.txt\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "cb6c1b30",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Load the Keras model and labels\n",
+    "def load_model_and_labels():\n",
+    "    model = tf.keras.models.load_model(MODEL_PATH)\n",
+    "    with open(LABEL_PATH, 'r') as f:\n",
+    "        labels = f.read().splitlines()\n",
+    "    return model, labels"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "33ce3882",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Function to preprocess the image\n",
+    "def preprocess_image(image):\n",
+    "    image = tf.image.resize(image, (224, 224))\n",
+    "    image = tf.keras.applications.mobilenet_v2.preprocess_input(image)\n",
+    "    return image"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "f3d8dac5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Function to make predictions\n",
+    "def predict(image, model, labels):\n",
+    "    image = np.expand_dims(image, axis=0)\n",
+    "    prediction = model.predict(image)\n",
+    "    predicted_label = labels[np.argmax(prediction)]\n",
+    "    confidence = np.max(prediction)\n",
+    "    return predicted_label, confidence"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "381c9251",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Main function to run the Streamlit app\n",
+    "def main():\n",
+    "    st.title(\"Image Classification\")\n",
+    "\n",
+    "    # Load model and labels\n",
+    "    model, labels = load_model_and_labels()\n",
+    "\n",
+    "    # Sidebar for file upload\n",
+    "    uploaded_file = st.file_uploader(\"Choose an image...\", type=[\"jpg\", \"png\", \"jpeg\"])\n",
+    "\n",
+    "    # Perform prediction if file uploaded\n",
+    "    if uploaded_file is not None:\n",
+    "        image = tf.image.decode_image(uploaded_file.read(), channels=3)\n",
+    "        st.image(image, caption=\"Uploaded Image\", use_column_width=True)\n",
+    "\n",
+    "        # Preprocess image\n",
+    "        preprocessed_image = preprocess_image(image)\n",
+    "\n",
+    "        # Make prediction\n",
+    "        predicted_label, confidence = predict(preprocessed_image, model, labels)\n",
+    "\n",
+    "        st.write(\"Prediction:\", predicted_label)\n",
+    "        st.write(\"Confidence:\", confidence)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "6a1339ad",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "WARNING:tensorflow:No training configuration found in the save file, so the model was *not* compiled. Compile it manually.\n"
+     ]
     }
+   ],
+   "source": [
+    "# Run the main function\n",
+    "if __name__ == \"__main__\":\n",
+    "    main()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "e469a907",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: streamlit in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (1.32.1)\n",
+      "Requirement already satisfied: tensorflow in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (2.12.0rc1)\n",
+      "Requirement already satisfied: altair<6,>=4.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (5.2.0)\n",
+      "Requirement already satisfied: blinker<2,>=1.0.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.7.0)\n",
+      "Requirement already satisfied: cachetools<6,>=4.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (5.3.0)\n",
+      "Requirement already satisfied: click<9,>=7.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (8.1.3)\n",
+      "Requirement already satisfied: numpy<2,>=1.19.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.23.5)\n",
+      "Requirement already satisfied: packaging<24,>=16.8 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (23.0)\n",
+      "Requirement already satisfied: pandas<3,>=1.3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (1.5.3)\n",
+      "Requirement already satisfied: pillow<11,>=7.1.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (9.4.0)\n",
+      "Requirement already satisfied: protobuf<5,>=3.20 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (4.22.0)\n",
+      "Requirement already satisfied: pyarrow>=7.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (15.0.1)\n",
+      "Requirement already satisfied: requests<3,>=2.27 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (2.28.2)\n",
+      "Requirement already satisfied: rich<14,>=10.14.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (13.7.0)\n",
+      "Requirement already satisfied: tenacity<9,>=8.1.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (8.2.3)\n",
+      "Requirement already satisfied: toml<2,>=0.10.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (0.10.2)\n",
+      "Requirement already satisfied: typing-extensions<5,>=4.3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (4.5.0)\n",
+      "Requirement already satisfied: gitpython!=3.1.19,<4,>=3.0.7 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (3.1.42)\n",
+      "Requirement already satisfied: pydeck<1,>=0.8.0b4 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (0.8.1b0)\n",
+      "Requirement already satisfied: tornado<7,>=6.0.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (6.2)\n",
+      "Requirement already satisfied: watchdog>=2.1.5 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from streamlit) (4.0.0)\n",
+      "Requirement already satisfied: tensorflow-intel==2.12.0-rc1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow) (2.12.0rc1)\n",
+      "Requirement already satisfied: absl-py>=1.0.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (1.4.0)\n",
+      "Requirement already satisfied: astunparse>=1.6.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (1.6.3)\n",
+      "Requirement already satisfied: flatbuffers>=2.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (23.5.26)\n",
+      "Requirement already satisfied: gast<=0.4.0,>=0.2.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (0.4.0)\n",
+      "Requirement already satisfied: google-pasta>=0.1.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (0.2.0)\n",
+      "Requirement already satisfied: h5py>=2.9.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (3.8.0)\n",
+      "Requirement already satisfied: jax>=0.3.15 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (0.4.6)\n",
+      "Requirement already satisfied: libclang>=13.0.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (15.0.6.1)\n",
+      "Requirement already satisfied: opt-einsum>=2.3.2 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (3.3.0)\n",
+      "Requirement already satisfied: setuptools in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (65.5.0)\n",
+      "Requirement already satisfied: six>=1.12.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (1.16.0)\n",
+      "Requirement already satisfied: termcolor>=1.1.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (2.2.0)\n",
+      "Requirement already satisfied: wrapt<1.15,>=1.11.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (1.14.1)\n",
+      "Requirement already satisfied: grpcio<2.0,>=1.24.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (1.51.3)\n",
+      "Requirement already satisfied: tensorboard<2.13,>=2.12 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (2.12.0)\n",
+      "Requirement already satisfied: tensorflow-estimator<2.13,>=2.12.0rc0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (2.12.0)\n",
+      "Requirement already satisfied: keras<2.13,>=2.12.0rc0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (2.12.0)\n",
+      "Requirement already satisfied: tensorflow-io-gcs-filesystem>=0.23.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorflow-intel==2.12.0-rc1->tensorflow) (0.30.0)\n",
+      "Requirement already satisfied: jinja2 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from altair<6,>=4.0->streamlit) (3.1.2)\n",
+      "Requirement already satisfied: jsonschema>=3.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from altair<6,>=4.0->streamlit) (4.17.3)\n",
+      "Requirement already satisfied: toolz in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from altair<6,>=4.0->streamlit) (0.12.1)\n",
+      "Requirement already satisfied: colorama in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from click<9,>=7.0->streamlit) (0.4.6)\n",
+      "Requirement already satisfied: gitdb<5,>=4.0.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from gitpython!=3.1.19,<4,>=3.0.7->streamlit) (4.0.11)\n",
+      "Requirement already satisfied: python-dateutil>=2.8.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from pandas<3,>=1.3.0->streamlit) (2.8.2)\n",
+      "Requirement already satisfied: pytz>=2020.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from pandas<3,>=1.3.0->streamlit) (2022.7.1)\n",
+      "Requirement already satisfied: charset-normalizer<4,>=2 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (3.0.1)\n",
+      "Requirement already satisfied: idna<4,>=2.5 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (3.4)\n",
+      "Requirement already satisfied: urllib3<1.27,>=1.21.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (1.26.14)\n",
+      "Requirement already satisfied: certifi>=2017.4.17 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests<3,>=2.27->streamlit) (2022.12.7)\n",
+      "Requirement already satisfied: markdown-it-py>=2.2.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from rich<14,>=10.14.0->streamlit) (3.0.0)\n",
+      "Requirement already satisfied: pygments<3.0.0,>=2.13.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from rich<14,>=10.14.0->streamlit) (2.14.0)\n",
+      "Requirement already satisfied: wheel<1.0,>=0.23.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from astunparse>=1.6.0->tensorflow-intel==2.12.0-rc1->tensorflow) (0.38.4)\n",
+      "Requirement already satisfied: smmap<6,>=3.0.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from gitdb<5,>=4.0.1->gitpython!=3.1.19,<4,>=3.0.7->streamlit) (5.0.1)\n",
+      "Requirement already satisfied: scipy>=1.5 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jax>=0.3.15->tensorflow-intel==2.12.0-rc1->tensorflow) (1.10.0)\n",
+      "Requirement already satisfied: MarkupSafe>=2.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jinja2->altair<6,>=4.0->streamlit) (2.1.2)\n",
+      "Requirement already satisfied: attrs>=17.4.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jsonschema>=3.0->altair<6,>=4.0->streamlit) (22.2.0)\n",
+      "Requirement already satisfied: pyrsistent!=0.17.0,!=0.17.1,!=0.17.2,>=0.14.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from jsonschema>=3.0->altair<6,>=4.0->streamlit) (0.19.3)\n",
+      "Requirement already satisfied: mdurl~=0.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from markdown-it-py>=2.2.0->rich<14,>=10.14.0->streamlit) (0.1.2)\n",
+      "Requirement already satisfied: google-auth<3,>=1.6.3 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (2.16.2)\n",
+      "Requirement already satisfied: google-auth-oauthlib<0.5,>=0.4.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (0.4.6)\n",
+      "Requirement already satisfied: markdown>=2.6.8 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (3.4.1)\n",
+      "Requirement already satisfied: tensorboard-data-server<0.8.0,>=0.7.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (0.7.0)\n",
+      "Requirement already satisfied: tensorboard-plugin-wit>=1.6.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (1.8.1)\n",
+      "Requirement already satisfied: werkzeug>=1.0.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (2.2.3)\n",
+      "Requirement already satisfied: pyasn1-modules>=0.2.1 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (0.2.8)\n",
+      "Requirement already satisfied: rsa<5,>=3.1.4 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (4.9)\n",
+      "Requirement already satisfied: requests-oauthlib>=0.7.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from google-auth-oauthlib<0.5,>=0.4.1->tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (1.3.1)\n",
+      "Requirement already satisfied: pyasn1<0.5.0,>=0.4.6 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from pyasn1-modules>=0.2.1->google-auth<3,>=1.6.3->tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (0.4.8)\n",
+      "Requirement already satisfied: oauthlib>=3.0.0 in c:\\users\\siddh\\appdata\\local\\programs\\python\\python311\\lib\\site-packages (from requests-oauthlib>=0.7.0->google-auth-oauthlib<0.5,>=0.4.1->tensorboard<2.13,>=2.12->tensorflow-intel==2.12.0-rc1->tensorflow) (3.2.2)\n",
+      "Note: you may need to restart the kernel to use updated packages.\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "\n",
+      "[notice] A new release of pip available: 22.3.1 -> 24.0\n",
+      "[notice] To update, run: C:\\Users\\siddh\\AppData\\Local\\Programs\\Python\\Python311\\python.exe -m pip install --upgrade pip\n"
+     ]
+    }
+   ],
+   "source": [
+    "pip install streamlit tensorflow"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": None,
+   "id": "9513cb4c",
+   "metadata": {},
+   "outputs": [],
+   "source": []
   }
-  _remove_token_from_url();
-</script>
-
-
-</body></html>
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
